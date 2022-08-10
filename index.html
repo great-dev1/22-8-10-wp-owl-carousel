@@ -642,21 +642,21 @@
 			}
 
 			.border-white-left:after {
-				border-left: 1px solid transparent;
+				/* border-left: 1px solid white; */
 			}
 
 			.whiteline::after {
-				border-left: 1px solid transparent;
+				border-left: 1px solid white;
 				content: "";
 				position: absolute;
 				top: 0;
 				left: 60px;
 				height: 100%;
-				z-index: 99;
+				z-index: 999;
 			}
 
 			.blackline::after {
-				border-left: 1px solid transparent;
+				border-left: 1px solid #1A1A1A;
 				content: "";
 				position: absolute;
 				top: 0;
@@ -669,7 +669,7 @@
 				content: "";
 				width: 1px;
 				background: #fff;
-				display: block;
+				display: none;
 				position: absolute;
 				top: 0;
 				height: 100%;
@@ -3987,13 +3987,53 @@
 		<script>
 
 			$(window).load(function () {
-
 				$('.sc-single-project').css('opacity', '1');
 				$('.loader').removeClass('active');
-
-
 			});
 
+			jQuery(document).ready(function () {
+				let $gesured_zone = document.getElementById('gesuredZone')
+				let $project_carousel = $(".owl-project-details")
+				let myInterval
+				let img_width = $(".single-project-img").width()
+				let white_width = $(window).width() - img_width
+
+				$project_carousel.on('drag.owl.carousel', function (event) {
+					myInterval = setInterval(function () {
+						let offset_left = $(".owl-item.active").offset().left
+						console.log("Offset", offset_left)
+						if ((offset_left > 60 - img_width) && (offset_left < 60 || offset_left > white_width + 60)) {
+							console.log("IN")
+							$gesured_zone.classList.add('whiteline')
+							$gesured_zone.classList.remove('blackline')
+							$gesured_zone.classList.remove('border-white-left')
+						} else {
+							console.log("OUT")
+							$gesured_zone.classList.add('blackline')
+							$gesured_zone.classList.remove('whiteline')
+							$gesured_zone.classList.remove('border-white-left')
+						}
+					}, 200)
+				})
+
+				$project_carousel.on('dragged.owl.carousel', function (event) {
+					clearInterval(myInterval)
+					$gesured_zone.classList.remove('blackline')
+					$gesured_zone.classList.remove('whiteline')
+					$gesured_zone.classList.add('border-white-left')
+				})
+
+				$project_carousel.on('translate.owl.carousel', function (event) {
+					setTimeout(function () {
+						$gesured_zone.classList.add('blackline')
+						$gesured_zone.classList.remove('border-white-left')
+					}, 150)
+					setTimeout(function () {
+						$gesured_zone.classList.remove('blackline');
+						$gesured_zone.classList.add('border-white-left')
+					}, 300)
+				})
+			})
 		</script><!-- html is corrupted -->
 	</main>
 </body>
